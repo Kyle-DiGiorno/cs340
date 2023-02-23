@@ -6,7 +6,19 @@
 #include <string.h>
 #include <unistd.h>
 
+void *heap_ptr = NULL;
+void *end_heap_ptr = NULL;
 
+typedef struct _metadata_t
+{
+  unsigned int size;    // The size of the memory block.
+  unsigned char isUsed; // 0 if the block is free; 1 if the block is used.
+  struct _metadata_t *next_free;
+  struct _metadata_t *prev_free;
+} metadata_t;
+
+metadata_t *free_head = NULL;
+metadata_t *free_tail = NULL;
 
 /**
  * Allocate space for array in memory
@@ -30,13 +42,209 @@
  *    NULL pointer is returned.
  *
  * @see http://www.cplusplus.com/reference/clibrary/cstdlib/calloc/
+ * 
  */
-void *calloc(size_t num, size_t size) {
-  // implement calloc:
+void* linked_list_update(metadata_t* prev_meta){
+  if (prev_meta->next_free->prev_free)
+  {
+    prev_meta->next_free->prev_free = prev_meta->prev_free;
+  }
+  else
+  {
+    free_tail = prev_meta->prev_free;
+  }
+  if (prev_meta->prev_free->next_free)
+  {
+    prev_meta->prev_free->next_free = prev_meta->next_free;
+  }
+  else
+  {
+    free_head = prev_meta->next_free;
+  }
+  return prev_meta + sizeof(metadata_t);
+}
+
+void* cal_logic(metadata_t* prev_meta,metadata_t* curMeta,size_t size){
+  
+    if (prev_meta->size >= size)
+    {
+      // printf("SIRED\n");
+      if (prev_meta->size <= size + sizeof(metadata_t))
+      {
+        prev_meta->isUsed = 1;
+       // printf("^0^\n");
+        //linked_list_update(prev_meta);
+        return prev_meta + sizeof(metadata_t);
+      }  
+    metadata_t *split = (void *)prev_meta + size + sizeof(metadata_t);
+      split->size = prev_meta->size - (size + sizeof(metadata_t));
+      prev_meta->size = size;
+      split->isUsed = 0;
+      if (prev_meta->prev_free)
+      {
+        prev_meta->prev_free->next_free = split;
+        split->prev_free = prev_meta->prev_free;
+      }
+      else
+      {
+        free_head = split;
+      }
+      if (prev_meta->next_free)
+      {
+        split->next_free = prev_meta->next_free;
+      }
+      else
+      {
+        free_tail = split;
+        split->next_free = NULL;
+      }
+    if(prev_meta->size == 0){
+      linked_list_update(prev_meta);
+    }
+    prev_meta->isUsed = 1;
+    //printf("*2*\n");
+    return prev_meta + sizeof(metadata_t);
+  }
   return NULL;
 }
 
+void *c_malloc(size_t size)
+{
+  //printf("HHHHHHHHHH");
+  metadata_t *curMeta = free_head;
+  if (heap_ptr == NULL)
+  {
+    end_heap_ptr = sbrk(0);
+    heap_ptr = sbrk(0);
+  }
 
+  while ((void *)curMeta != NULL)
+  {
+    metadata_t *prev_meta = curMeta;
+
+    curMeta = curMeta->next_free;
+    void* k = cal_logic(prev_meta, curMeta, size);
+    if(k){
+      //linked_list_update((metadata_t*)(k));
+      //printf("((3))");
+      //printf("%d\n",k);
+      return k;
+    }
+    
+  }
+  metadata_t *meta = sbrk(sizeof(metadata_t));
+  meta->size = size;
+  meta->isUsed = 1;
+  //printf("IOI%d:",size);
+  void *data = sbrk(size);
+  //printf("&1&");
+  return data;
+}
+void *calloc(size_t num, size_t size)
+{
+  // if(num*size == 0){
+  //   //printf("GTHJKIUYGFVBNHJUYHGFBNJ\n");
+  // }
+  // printf("\nHARVEY PETET\n--------------------\npppppp\n");
+  // implement calloc:
+  // void *get_mal = malloc(size * num);
+  // if (get_mal == NULL)
+  // {
+  //   return NULL;
+  // }
+  // printf(get_mal);
+  // //printf("HJHTYU");
+  // //memset(get_mal, 0, size * num);
+  // return get_mal;
+  // void *p;
+
+  //   p = malloc (size * num);
+  //   if (p == 0)
+  //       return (p);
+
+  //   bzero (p, num * size);
+  //   return (p);
+  // void* p;
+  // size_t sizeInBytes;
+
+  // /* calculate actual memory size in bytes */
+  // sizeInBytes = num * size;
+  // /* allocate memory block */
+  // p = mem1_malloc(sizeInBytes);
+  // /* initialize memory block to zero */
+  // if (p != NULL_PTR)
+  // {
+  //   mem1_memset(p, 0, sizeInBytes);
+  // }
+  // return p;
+  // printf("%d\n",size);
+  // printf("%d\n",num);
+  char *p;
+
+	// If either is zero just return NULL.
+	if (num == 0 || size == 0)
+	{
+    //printf("@#$^&*I(O)P\n");
+		return NULL;
+	}
+	else
+	{
+    //printf("@5@\n");
+		p = c_malloc(num * size);
+    // printf("@6@\n");
+    // printf("-------?:\n");
+    // printf("%d\n",((metadata_t*)(p-sizeof(metadata_t)))->size);
+    // printf("-------?:\n");
+		bzero(p, num * size);
+    // printf("@7@\n");
+    
+		return p;
+	}
+
+}
+void* mal_logic(metadata_t* prev_meta,metadata_t* curMeta,size_t size){
+  
+    if (prev_meta->size >= size)
+    {
+      // printf("SIRED\n");
+      if (prev_meta->size <= size + sizeof(metadata_t))
+      {
+        prev_meta->isUsed = 1;
+       // printf("^0^\n");
+        //linked_list_update(prev_meta);
+        return prev_meta + sizeof(metadata_t);
+      }  
+    metadata_t *split = (void *)prev_meta + size + sizeof(metadata_t);
+      split->size = prev_meta->size - (size + sizeof(metadata_t));
+      prev_meta->size = size;
+      split->isUsed = 0;
+      if (prev_meta->prev_free)
+      {
+        prev_meta->prev_free->next_free = split;
+        split->prev_free = prev_meta->prev_free;
+      }
+      else
+      {
+        free_head = split;
+      }
+      if (prev_meta->next_free)
+      {
+        split->next_free = prev_meta->next_free;
+      }
+      else
+      {
+        free_tail = split;
+        split->next_free = NULL;
+      }
+    if(prev_meta->size == 0){
+      linked_list_update(prev_meta);
+    }
+    prev_meta->isUsed = 1;
+    //printf("*2*\n");
+    return prev_meta + sizeof(metadata_t);
+  }
+  //return NULL;
+}
 /**
  * Allocate memory block
  *
@@ -58,17 +266,47 @@ void *calloc(size_t num, size_t size) {
  *
  * @see http://www.cplusplus.com/reference/clibrary/cstdlib/malloc/
  */
-void *malloc(size_t size) {
-  // implement malloc:
-  return NULL;
+
+void *malloc(size_t size)
+{
+  //printf("HHHHHHHHHH");
+  metadata_t *curMeta = free_head;
+  if (heap_ptr == NULL)
+  {
+    end_heap_ptr = sbrk(0);
+    heap_ptr = sbrk(0);
+  }
+
+  while ((void *)curMeta != NULL)
+  {
+    metadata_t *prev_meta = curMeta;
+
+    curMeta = curMeta->next_free;
+    void* k = mal_logic(prev_meta, curMeta, size);
+    if(k){
+      //linked_list_update((metadata_t*)(k));
+      //printf("((3))");
+      //printf("%d\n",k);
+      return k;
+    }
+    
+  }
+  metadata_t *meta = sbrk(sizeof(metadata_t));
+  meta->size = size;
+  meta->isUsed = 1;
+  //printf("IOI%d:",size);
+  void *data = sbrk(size);
+  //printf("&1&");
+  return data;
 }
+
 
 
 /**
  * Deallocate space in memory
  *
  * A block of memory previously allocated using a call to malloc(),
- * calloc() or realloc() is deallocated, making it available again for
+ * calloc() or realloc() is deallocated, making it available agaAin for
  * further allocations.
  *
  * Notice that this function leaves the value of ptr unchanged, hence
@@ -80,10 +318,22 @@ void *malloc(size_t size) {
  *    calloc() or realloc() to be deallocated.  If a null pointer is
  *    passed as argument, no action occurs.
  */
-void free(void *ptr) {
-  // implement free
+void free(void *ptr)
+{
+  metadata_t *meta = ptr - sizeof(metadata_t);
+  meta->isUsed = 0;
+  if (free_head == NULL)
+  {
+    free_head = meta;
+  }
+  if (free_tail)
+  {
+    meta->prev_free = free_tail;
+    free_tail->next_free = meta;
+  }
+  free_tail = meta;
+  free_tail->next_free = NULL;
 }
-
 
 /**
  * Reallocate memory block
@@ -130,7 +380,23 @@ void free(void *ptr) {
  *
  * @see http://www.cplusplus.com/reference/clibrary/cstdlib/realloc/
  */
-void *realloc(void *ptr, size_t size) {
+void *realloc(void *ptr, size_t size)
+{
   // implement realloc:
-  return NULL;
+  if (size == 0)
+  {
+    free(ptr);
+    return NULL;
+  }
+  metadata_t *ptr_meta = ptr - sizeof(metadata_t);
+  void *new_mem;
+
+  if (size <= ptr_meta->size)
+  {
+    return ptr;
+  }
+  new_mem = malloc(size);
+  memcpy(new_mem, ptr, ptr_meta->size);
+  free(ptr);
+  return new_mem;
 }
