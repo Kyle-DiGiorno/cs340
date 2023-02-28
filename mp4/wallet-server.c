@@ -23,66 +23,90 @@ int setnonblock(int sock) {
 }
 
 wallet_t wallet;
-void* parse_request(void* inp, int len){
+void* parse_request(char* inp, int len){
   printf("BEGUN PARSING\n");
   printf(inp);
   printf("BEGUN PARSING2\n");
   char gt[3] = "GET";
   char md[3] = "MOD";
+  char ext[4] = "EXIT";
   // gt[0] = 'G';
   // gt[0] = 'E';
   // gt[0] = 'T';
   
-  printf("%d\n",memcmp(inp,gt,2));
-  if(memcmp(inp,gt,3)==0){
+  printf("%d\nt",strncmp(inp,"MOD",3));
+  printf(inp);
+  printf("t \n");
+  if(strncmp(inp,gt,3)==0){
     printf("p1\n");
     void* buf[len - 4];
     printf("p2\n");
     memccpy(buf,inp+4,'\0', len-4);
     printf("p3\n");
-    char ret_str[sizeof(int) + 1];
+    char* ret_str = malloc(sizeof(int) + 1);
     printf("p4\n");
     sprintf(ret_str,"%d",wallet_get(&wallet, buf));
     printf("p5\n");
     strcat(ret_str, "\n");
+    printf(ret_str);
     printf("p6\n");
-    return(ret_str);
-  }
-   else if(memcmp(inp,md,3)==0){
+    return (ret_str);
+  } else if(strncmp(inp,md,3)==0){
     printf("in mod\n");
     void* resc_buf = malloc(sizeof(char)*len);
+    printf("malloc line\n");
     int i = 0;
-    for(i = 0; memcmp(inp+i,' ', 1) != 0; i++){
+    char spc[1] = " ";
+    for(i = 0; strncmp(inp+4+i,spc, 1) != 0;){
+      printf("\n%da\na",i);
+      printf("wakku\n");
       if(i > len){
+        printf("exiting\n");
         return "EXIT";
       }
       //buf = realloc(sizeof(char)*i);
+      printf("resc_buf: \n");
       memcpy(resc_buf + i, inp+4+i,1);
+      printf("resc_buf2: \n");
       printf(resc_buf);
+      printf("resc_buf3: \n");
+      i++;
+      printf("\n%da\na",memcmp(inp+4+i,spc, 1));
     }
-
-    memcpy(resc_buf + i + 1, '\0',1);
-    void* delta_buf[len - i];
-    memccpy(delta_buf,inp+4+i,'\0', len-4-i);
-    char ret_str[sizeof(int) + 1];
+    printf("weve arrived\n");
+    //memcpy(resc_buf + i + 1, '\0',1);
+    printf("T1\n");
+    char* delta_buf[len - i];
+    
+    strcpy(delta_buf,inp+4+i);
+    printf(delta_buf);
+    printf("T2\n");
+    char ret_str= malloc(sizeof(int) + 1);
     printf("m6\n");
-    sprintf(ret_str,"%d",wallet_change_resource(&wallet, resc_buf,delta_buf));
+    int add_str = wallet_change_resource(&wallet, resc_buf,atoi(delta_buf));
+    printf("m6.00\n");
+    printf("%d\n",add_str);
+    printf("m6.0\n");
+    sprintf(ret_str,"%d",add_str);
+    printf("m6.5\n");
     strcat(ret_str, "\n");
-    return(ret_str);
+    printf("m7\n");
+    return (ret_str);
   }
-  else if(memcmp(inp,'EXIT',4)==0){
+  else if(strcmp(inp,ext)==0){
+    printf("GOT HER\n");
     return "EXIT";
-  } else {
-    return "EXIT";
+  // } else {
+  //   return "EXIT";
   }
 }
 void* parse_input(void *vptr){
   char *to_add = malloc(sizeof(char));
   strcpy(to_add, "\0");
   int i = 0;
-  void *in_str = malloc(sizeof(char));
+  char *in_str = malloc(sizeof(char));
   int sockfd = *((int *)vptr);
-  setnonblock(sockfd);
+  //setnonblock(sockfd);
   printf("in 0\n");
   int last_request = 0;
   int terminated = 0;
@@ -93,16 +117,22 @@ void* parse_input(void *vptr){
     in_str = realloc(in_str, (i + 1) * sizeof(char));
     memcpy(in_str + i, to_add, 1);
     printf(in_str);
-    if(memcmp(in_str + i - 1, "\n", 1) == 0){
+    printf("\ncount: %d\n",memcmp(to_add, "\n", 1));
+    if(memcmp(to_add, "\n", 1) == 0){
       terminated = 1;
       printf("TTYN");
       printf(in_str);
-      void* k = parse_request(in_str + last_request, i-last_request);
+      char* k = parse_request(in_str + last_request, i-last_request);
+      printf(k);
+      printf("\ntoodles \n");
       if(memcmp(k,"EXIT",4)==0){
         close(sockfd);
+        break;
       }
       else{
-        return k;
+        printf(k);
+        send(sockfd,k,sizeof(k),0);
+        printf(" sent\n");
       }
       last_request = i;
     }
@@ -112,18 +142,22 @@ void* parse_input(void *vptr){
     i++;
   }
 
-  printf("\nto add:");
-  printf(to_add);
-  if(!terminated){
-    void* k = parse_request(in_str, sizeof(in_str)/sizeof(char));
-      if(memcmp(k,"EXIT",4)==0){
-        close(sockfd);
-      }
-      else{
-        return k;
-      }
-      last_request = i;
-  }
+  // printf("\nto add:");
+  // printf(to_add);
+  // if(!terminated){
+  //   char* k = parse_request(in_str, sizeof(in_str)/sizeof(char));
+  //   printf("TYHJK\n");
+  //   printf(k);
+  //   printf("- k \n");
+  //     if(memcmp(k,"EXIT",4)==0){
+  //       close(sockfd);
+  //     }
+  //     else{
+
+  //       return k;
+  //     }
+  //     last_request = i;
+  // }
 }
 
 void create_wallet_server(int port) {
@@ -144,22 +178,22 @@ void create_wallet_server(int port) {
   // bind:
   struct sockaddr_in server_addr, client_address;
   memset(&server_addr, 0x00, sizeof(server_addr));
-  printf(stderr,"2\n");
+  
   server_addr.sin_family = AF_INET;
   server_addr.sin_addr.s_addr = INADDR_ANY;
   server_addr.sin_port = htons(port);
-  printf(stderr,"3\n");
+  
   bind(sockfd, (const struct sockaddr *)&server_addr, sizeof(server_addr));
-  printf(stderr,"4\n");
+ 
   // listen:
   listen(sockfd, 10);
-  printf(stderr,"5\n");
+ 
   // accept:
   socklen_t client_addr_len;
-  printf(stderr,"6\n"); // = malloc(sizeof(client_addr_len));
+   // = malloc(sizeof(client_addr_len));
   while (1)
   {
-    printf(stderr,"7\n");
+   
     int *fd = malloc(sizeof(int));
     //int status = fcntl(sockfd, F_SETFL, O_NONBLOCK);
     // struct timeval tv = {
@@ -172,7 +206,7 @@ void create_wallet_server(int port) {
       continue;
     }*/
     *fd = accept(sockfd, (struct sockaddr *)&client_address, &client_addr_len);
-    printf(stderr,"8\n");
+  
     if (*fd < 0)
     {
       continue;
@@ -180,11 +214,15 @@ void create_wallet_server(int port) {
     printf("Client connected (fd=%d)\n", *fd);
 
     pthread_t tid;
-    printf(stderr,"9\n");
-    void* k = pthread_create(&tid, NULL, parse_input(fd), fd);
-    printf(stderr,"10\n");
+    
+    //char* k = malloc(1000);
+    //printf("%d\n",parse_input(fd));
+    pthread_create(&tid, NULL, parse_input(fd), NULL);
+    //pthread_join(&tid,k);
+    //printf(k);
+    printf(" 10\n");
     pthread_detach(tid);
-    return k;
+    //return k;
   }
 }
 
