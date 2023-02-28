@@ -13,7 +13,9 @@ void *test_add_hedgehog_food(void *args) {
   wallet_t *wallet = (wallet_t *) args;
   for (int i = 0; i < 500; i++) {
       wallet_change_resource(wallet, "hedgehog-food", 1);
+      //printf("\nhere migr\n");
   }
+  //printf("\nhere retr\n");
   return NULL;
 }
 
@@ -21,8 +23,11 @@ void *test_add_hedgehogs(void *args) {
   wallet_t *wallet = (wallet_t *) args;
   for (int i = 0; i < 100; i++) {
       wallet_change_resource(wallet, "hedgehog-food", -3);
+      //printf("\nmasterl\n");
       wallet_change_resource(wallet, "hedgehogs", 1);
+      //printf("\nhernkm;l\n");
   }
+  //printf("\nh0ipn\n");
   return NULL;
 }
 
@@ -44,11 +49,12 @@ TEST_CASE("hedgehog - 10 threads", "[weight=2][part=1]") {
   pthread_create(&tids[5], NULL, test_add_hedgehogs, &wallet);
   pthread_create(&tids[6], NULL, test_add_hedgehog_food, &wallet);
   pthread_create(&tids[7], NULL, test_add_hedgehog_food, &wallet);
-
+  printf("\nhere gyhbnjr\n");
   for (int i = 0; i < 8; i++) {
     pthread_join(tids[i], NULL);
+    printf("\nhere thread%d\n",i);
   }
-
+  printf("\nhere m in\n");
   int num_food = wallet_get(&wallet, "hedgehog-food");
   int num_hedgehogs = wallet_get(&wallet, "hedgehog-food");
 

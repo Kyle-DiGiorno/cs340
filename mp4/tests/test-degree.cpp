@@ -89,7 +89,7 @@ void *job_dna(void *args)
     wallet_change_resource(wallet, "dna", 1);
     fprintf(stderr, "🧬");
   }
-
+  //printf("\ndna%d\n",i);
   return NULL;
 }
 
@@ -101,10 +101,15 @@ void *job_research_green(void *args)
   for (i = 0; i < 100; i++)
   {
     wallet_change_resource(wallet, "green-apple", -1);
+    //printf("/ng 1\n");
     wallet_change_resource(wallet, "four-leaf-clover", -1);
+    //printf("/ng 2\n");
     wallet_change_resource(wallet, "clover", -10);
+    //printf("/ng 3\n");
     wallet_change_resource(wallet, "dna", -5);
+    //printf("/ng 4\n");
     wallet_change_resource(wallet, "green-book", 1);
+    //printf("/ng 5\n");
     fprintf(stderr, "📗");
   }
   return NULL;
@@ -118,8 +123,11 @@ void *job_research_blue(void *args)
   for (i = 0; i < 100; i++)
   {
     wallet_change_resource(wallet, "dna", -10);
+    //printf("/nb 1\n");
     wallet_change_resource(wallet, "gem", -1);
+    //printf("/nb 2\n");
     wallet_change_resource(wallet, "blue-book", 1);
+    //printf("/nb 3\n");
     fprintf(stderr, "📘");
   }
   return NULL;
@@ -133,8 +141,11 @@ void *job_research_orange(void *args)
   for (i = 0; i < 100; i++)
   {
     wallet_change_resource(wallet, "tools", -5);
+    //printf("/no 1\n");
     wallet_change_resource(wallet, "dna", -2);
+    //printf("/no 2\n");
     wallet_change_resource(wallet, "orange-book", 1);
+    //printf("/no 3\n");
     fprintf(stderr, "📙");
   }
   return NULL;
@@ -151,6 +162,7 @@ void *job_combine_research(void *args)
     wallet_change_resource(wallet, "blue-book", -1);
     wallet_change_resource(wallet, "green-book", -1);
     wallet_change_resource(wallet, "books", 1);
+    
     fprintf(stderr, "📚");
   }
   return NULL;
@@ -191,8 +203,22 @@ TEST_CASE("degree", "[weight=5][part=1]")
     const int totalJobs = 9;
     for (int i = 0; i < totalJobs; i++)
     {
+      printf("\nNew:\n");
+      int t1 = wallet_get(&wallet, "books");
+      int t2 = wallet_get(&wallet, "orange-book");
+      int t3 = wallet_get(&wallet, "blue-book");
+      int t4 = wallet_get(&wallet, "green-book");
+      int t5 = wallet_get(&wallet, "green-apple");
+      int t6 = wallet_get(&wallet, "dna");
+      int t7 = wallet_get(&wallet, "degree!");
       pthread_join(tids[i], NULL);
     }
+    printf("\nbooks-%d\n",wallet_get(&wallet, "books"));
+    printf("\norange-%d\n",wallet_get(&wallet, "orange-book"));
+    printf("\ngreen-%d\n",wallet_get(&wallet, "green-book"));
+    printf("\nblue-%d\n",wallet_get(&wallet, "blue-book"));
+    printf("\ngreen-apple-%d\n",wallet_get(&wallet, "green-apple"));
+    printf("\ndna%d\n",wallet_get(&wallet, "dna"));
     REQUIRE(wallet_get(&wallet, "degree!") == 1);
     wallet_destroy(&wallet);
   }

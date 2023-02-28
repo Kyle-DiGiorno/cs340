@@ -42,6 +42,7 @@ void *pong(void *args) {
 void *timeout(void *wallet) {
   sleep(2);
   pingpongtimeup = true;
+  printf("\nTYHJTIUJHJGKOIJG\n");
   return NULL;
 }
 
