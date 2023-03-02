@@ -64,10 +64,10 @@ int wallet_change_resource(wallet_t *wallet, const char *resource, const int del
   //   printf("\nyeah\n");
   // }
   pthread_cond_broadcast(&wallet->conditional);
-  printf("cr1\n");
+  //printf("cr1\n");
   if (!nxt)
   {
-    printf("cr2\n");
+    //printf("cr2\n");
     //pthread_mutex_lock(&wallet->lock);
     //printf("\n0\n");
     wallet_resource *new_re = malloc(sizeof(wallet_resource));
@@ -88,7 +88,7 @@ int wallet_change_resource(wallet_t *wallet, const char *resource, const int del
     //printf("\n2\n");
     //pthread_mutex_unlock(&wallet->lock);
   }
-  printf("cr10\n");
+  //printf("cr10\n");
   /*if (!nxt)
   {
     pthread_mutex_unlock(&wallet->lock);
@@ -96,27 +96,27 @@ int wallet_change_resource(wallet_t *wallet, const char *resource, const int del
   }*/
   pthread_mutex_lock(&wallet->lock);
   //printf(nxt->resource_name);
-  printf("\n%d\n",delta);
+  //printf("\n%d\n",delta);
    if(delta < 0){
     while (nxt->amount + delta < 0)
      {
-       printf("\nlast%d\n",delta);
+       //printf("\nlast%d\n",delta);
        //printf(nxt->resource_name);
   //   //  printf("\nlyp%d\n",nxt->amount);
        //printf("\n%d\n",nxt->amount + delta);
-       printf("cr12\n");
+       //printf("cr12\n");
        pthread_cond_wait(&wallet->conditional, &wallet->lock);
   //     //break;
       }
   //   printf("\nhere 3\n");
   }
-  printf("\nhere 2\n");
+  //printf("\nhere 2\n");
   nxt->amount += delta;
   //printf("\n%d\n", nxt->amount);
   pthread_mutex_unlock(&wallet->lock);
-  printf("\nhere 3\n");
+  //printf("\nhere 3\n");
   pthread_cond_broadcast(&wallet->conditional);
-  printf("\nhere 32\n");
+  //printf("\nhere 32\n");
   return nxt->amount;
 }
 
@@ -125,10 +125,10 @@ int wallet_change_resource(wallet_t *wallet, const char *resource, const int del
  */
 void wallet_destroy(wallet_t *wallet) {
   // Implement `wallet_destroy`
-  printf("\nhere 3r\n");
+  //printf("\nhere 3r\n");
   pthread_cond_destroy(&wallet->conditional);
   pthread_mutex_destroy(&wallet->lock);
-  printf("\nhere 3r\n");
+  //printf("\nhere 3r\n");
   wallet_resource *curr = wallet->head;
   wallet_resource *nxt = wallet->head;
   while (nxt)

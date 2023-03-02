@@ -205,6 +205,12 @@ void* parse_request(char* inp, int len, int sockfd){
     return "EXIT";
   }
 }
+void segfault_sigaction(int signal, siginfo_t *si, void *arg)
+{
+    printf("Caught segfault at address %p\n", si->si_addr);
+
+    exit(0);
+}
 void* parse_input(int vptr){
   
   //strcpy(to_add, "\0");
@@ -225,14 +231,22 @@ void* parse_input(int vptr){
   //pthread_detach(tind);
   int full_count = 0;
   char* to_add = malloc(4096);
+  struct sigaction sa;
+  memset(&sa, 0, sizeof(struct sigaction));
+  sigemptyset(&sa.sa_mask);
+  sa.sa_sigaction = segfault_sigaction;
+  sa.sa_flags   = SA_SIGINFO;
+
+  sigaction(SIGSEGV, &sa, NULL);
   //int j = 4096;
   while (1)
   {
+    strcpy(to_add,"k");
     //j+=4*sizeof(char);
     //printf("LOOP START\n");
     //printf("sock %d\n",sockfd);
     //printf(to_add);
-    // printf("a");
+    printf("a");
     if(read(sockfd, to_add, 0)){
       
       printf(": Peek value\n");
@@ -249,7 +263,7 @@ void* parse_input(int vptr){
     printf(":-:%d\n",sizeof(to_add));
     //realloc(to_add, j);
     if(!recv(sockfd, to_add, 1,NULL)){
-      
+      strcpy(to_add,"k");
       printf("uh\n");
       continue;
     } else {
