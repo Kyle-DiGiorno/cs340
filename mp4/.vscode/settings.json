@@ -4,6 +4,7 @@
         "condition_variable": "cpp",
         "future": "cpp",
         "mutex": "cpp",
-        "inet.h": "c"
+        "inet.h": "c",
+        "wallet.h": "c"
     }
 }

@@ -20,37 +20,52 @@ size_t PORT = 12000;
 int read_response(int fd) {
   // Read response:
   char buffer[4096];
+  printf("I DONT UNDERSTAND\n");
+  printf("%d\n",read(fd, buffer, 0));
   int bytes_read = recv(fd, buffer, 4096, 0);
+  printf("AQUIRED THE SIRE\n");
+  printf("AQUIRED THE SIREA\n");
+  printf("%d\n",bytes_read);
   if(bytes_read == -1){
+    printf("giga \n");
     Catch::throw_runtime_error("Read failed");
     return -1;
   }
 
   // Format as string:
+  printf("AQUIRED THE SIRE2\n");
   buffer[bytes_read - 1] = '\0';
+  printf("%s",buffer);
+  printf("%d\n",strlen(buffer));
+//  printf("%c\n",buffer[0]);
 
   // Convert to a number:
   int value = atoi(buffer);
-
+  printf("AQUIRED THE SIRE3\n");
   // Check for an atoi error and return a non-zero error value:
   if (value == 0 && buffer[0] != '0' && buffer[1] != '\n') {
+    printf("AQUIRED THE SIRE3.5: %d\n",value);
     return -99999;
   }
-
+  printf("AQUIRED THE SIRE4\n");
   return value;
 }
 
 int wallet_GET(int fd, const char* resource_name) {
   // Send GET:
   char* message = NULL;
+  printf("AQ1\n");
   asprintf(&message, "GET %s\n", resource_name);
+  printf("AQ2\n");
   int bytes_sent = send(fd, message, strlen(message), MSG_NOSIGNAL);
+  printf("AQ3:%d\n",bytes_sent);
   if(bytes_sent == -1){
     Catch::throw_runtime_error("Send failed, socket/server is down.");
     return -1;
   }
+  printf("AQ4\n");
   free(message);
-
+  printf("FD VAL:%d\n",fd);
   return read_response(fd);
 }
 
@@ -62,11 +77,14 @@ void wallet_MOD_noread(int fd, const char* resource_name, int delta) {
 }
 
 int wallet_MOD(int fd, const char* resource_name, int delta) {
+  printf("AQUIRED THE SIRE _ WHAR\n");
   wallet_MOD_noread(fd, resource_name, delta);
+  printf("AQUIRED THE SIRE_ what 2\n");
   return read_response(fd);
 }
 
 void wallet_EXIT(int fd) {
+  printf("HERE\n");
   send(fd, "EXIT\n", 5, MSG_NOSIGNAL);
   shutdown(fd, SHUT_RDWR);
   close(fd);
@@ -189,7 +207,9 @@ TEST_CASE("wallet-server - `MOD` and `GET` work together with one resource", "[w
 
   // MOD + GET
   CHECK( wallet_GET(client_fd, "Money") == 0 );
+  printf("TO ThO\n");
   CHECK( wallet_MOD(client_fd, "Money", 5) == 5);
+  printf("TO MARKEEY\n");
   CHECK( wallet_GET(client_fd, "Money") == 5 );
 
   wallet_EXIT(client_fd);
@@ -203,15 +223,16 @@ TEST_CASE("wallet-server - `MOD` blocks request when resources are unavailable",
 
   int client1_fd = generate_client_socket(port);
   int client2_fd = generate_client_socket(port);
-
+  printf("hel[p\n");
   wallet_MOD_noread(client1_fd, "Money", -10);
   usleep(100);
-  
+  printf("pre-recv\n");
   // `client1_fd` must be block since Money is not available:
   char c;
   int bytes_received = recv(client1_fd, &c, 1, MSG_DONTWAIT);
+  printf("RECIEVED\n");
   CHECK(bytes_received == -1); // No data should be available.
-
+  printf("USEPrpSTION\n");
   // `client2_fd` adds the money:
   wallet_MOD(client2_fd, "Money", 20);
 
