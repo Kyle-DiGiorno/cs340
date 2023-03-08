@@ -157,7 +157,7 @@ printf("new\n");
   // close(fd);
   //  printf("close %d", fd);
   globe_c++;
-
+  httprequest_destroy(rq);
   write(fd, response, op);
   //  read_s(fd);
   close(fd);
@@ -200,6 +200,6 @@ int main(int argc, char *argv[]) {
     pthread_create(&tid, NULL, client_thread, fd);
     pthread_detach(tid);
   }
-
+  
   return 0;
 }

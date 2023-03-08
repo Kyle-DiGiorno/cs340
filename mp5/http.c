@@ -26,12 +26,12 @@ ssize_t httprequest_parse_headers(HTTPRequest *req, char *buffer, ssize_t buffer
   int has_payload = 0;
   int count = 0;
   //req->c_len = 0;
-  char *out[3]; //{'\0', '\0', '\0', '\0', '\0'};
-  for (int i = 0; i < 3; i++)
-  {
-    out[i] = malloc(buffer_len * sizeof(char));
-    *out[i] = '\0';
-  }
+  // char* out[3]; //{'\0', '\0', '\0', '\0', '\0'};
+  // for (int i = 0; i < 3; i++)
+  // {
+  //   out[i] = malloc(buffer_len * sizeof(char));
+  //   //*out[i] = '\0';
+  // }
 
   req->key = calloc(1,sizeof(char *));
   req->value = calloc(1,sizeof(char *));
@@ -84,7 +84,16 @@ ssize_t httprequest_parse_headers(HTTPRequest *req, char *buffer, ssize_t buffer
     }*/
     if (count < 3)
     {
-      strncat(out[count], (buffer + i), 1);
+      if(count == 0){
+        strncat( req->action, (buffer + i), 1);
+      }
+      if(count == 1){
+        strncat( req->path, (buffer + i), 1);
+      }
+      if(count == 2){
+        strncat( req->version, (buffer + i), 1);
+      }
+      //strncat(out[count], (buffer + i), 1);
     }
     else
     {
@@ -98,16 +107,13 @@ ssize_t httprequest_parse_headers(HTTPRequest *req, char *buffer, ssize_t buffer
       }
     }
   }
-  req->action = out[0];
-  req->path = out[1];
-  req->version = out[2];
   // req->key = out[3];
   // req->value = out[4];
   // req->key_size = malloc(sizeof(size_t));
   req->key_size = count - 2;
   // req->payload = malloc(buffer_len);
-  req->payload = malloc(buffer_len);
-  
+  //req->payload = malloc(buffer_len);
+  //
   return i + 4;
 }
 size_t TimeoutRead (int port, void*buf, size_t size, int mlsec_timeout)
@@ -207,6 +213,7 @@ ssize_t httprequest_read(HTTPRequest *req, int sockfd)
       break;
     }*/
     i++;
+    //free(in_str);
   }
   // in_str = realloc(sizeof(char)*i);
   // read()
@@ -258,6 +265,8 @@ ssize_t httprequest_read(HTTPRequest *req, int sockfd)
   printf("LEFT 7 \n");
   //}
   //close(sockfd);
+  free(to_add);
+  free(in_str);
   return i+con_len;
 }
 
@@ -309,11 +318,14 @@ const char *httprequest_get_path(HTTPRequest *req)
  */
 void httprequest_destroy(HTTPRequest *req)
 {
-
+  
+  for (int i = 0; i < req->key_size; i++)
+  {
+    free(req->key[i]);
+    free(req->value[i]);
+  }
   free(req->key);
   free(req->value);
-  if(req->payload){
-    free(req->payload);
-  }
+  free(req->payload);
   // free(req->payload_copy);
 }
