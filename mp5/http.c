@@ -232,12 +232,21 @@ ssize_t httprequest_read(HTTPRequest *req, int sockfd)
   if(ip){
     printf("HOW%d\n",con_len);
     con_len = atoi(ip);
+    printf("HOW%d\n",con_len);
     printf("atoi\n");
     if(con_len > 0){ 
     printf("LEFT\n"); 
      req->payload = malloc(con_len*sizeof(char));
      printf("malloced\n");
-     read(sockfd, req->payload, con_len);
+     int pcl = 0;
+     while(con_len > 0){
+      ssize_t tr = read(sockfd, req->payload+pcl, con_len);
+      printf("size:%d\n",tr);
+      printf("%.2s",req->payload);
+      con_len-=tr;
+      pcl += tr;
+     }
+     
      printf("read\n");
     } else{
       req->payload = NULL;
@@ -248,6 +257,7 @@ ssize_t httprequest_read(HTTPRequest *req, int sockfd)
   }
   printf("LEFT 7 \n");
   //}
+  close(sockfd);
   return i+con_len;
 }
 

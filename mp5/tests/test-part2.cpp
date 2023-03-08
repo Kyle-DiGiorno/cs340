@@ -17,7 +17,9 @@ typedef struct _pipe_info_t {
 
 void *_thread_pipe_write(void *vptr) {
   pipe_info_t *pi = (pipe_info_t *)vptr;
+  printf("CJECK WRITABLE\n");
   write(pi->pipefd, pi->buffer, pi->length);
+  printf("WELL SOMETHINGS WEIRD\n");
   close(pi->pipefd);
 }
 
@@ -38,11 +40,18 @@ HTTPRequest *_readpipe_vptr(const void *s, size_t len) {
   pipe_info.pipefd = writefd;
   pipe_info.length = len;
   pthread_t tid;
+  //printf(buf);
+  printf("\n%d\n",pipefd[0]);
+  printf("\n%d\n",pipefd[1]);
+  printf("\n%d\n",len);
+  printf("%.2s\n",buf+65465);
+  
   pthread_create(&tid, NULL, _thread_pipe_write, &pipe_info);
 
   httprequest_read(req, readfd);
   printf("UB\n");
-  //pthread_join(tid, NULL);
+  
+  pthread_join(tid, NULL);
   close(readfd);
 
   free(buf);
@@ -281,10 +290,15 @@ printf("we here3\n");
   REQUIRE( req->payload != NULL );
   //printf("%s\n",(req->payload));
   int i = 0;
-  while(memcmp(req->payload, reqStr + offset, i) == 0){
+  while(i <= size){
     i++;
+    if(memcmp((req->payload)+i, reqStr + offset+i, 1)!=0){
+      printf("%d and size %d\n",i,size);
+      printf("%.1s, %.1s\n",(req->payload)+i,reqStr + offset+i);
+      break;
+    }
   }
-  printf("%d and size %d\n",i,size);
+  
   //printf("%d\n",memcmp(req->payload, reqStr + offset, 100));
   REQUIRE( memcmp(req->payload, reqStr + offset, size) == 0 );
 
@@ -303,5 +317,6 @@ TEST_CASE("httprequest_read - Medium Payload (50 KiB)", "[weight=3][part=2]") {
 }
 
 TEST_CASE("httprequest_read - Large Payload (5 MiB)", "[weight=4][part=2]") {
+  printf("BIG maAN\n\n\n\n");
   payload_test(5 * 1024 * 1024);
 }
