@@ -17,6 +17,10 @@ struct _HTTPRequest {
   // ...however, you MUST keep the `action`, `path`, `version`, and `payload` members
   //    so our test cases can inspect the contents of them without making you write
   //    a bunch of getter functions. :)
+  const char **key;
+  const char **value;
+  size_t key_size;
+  int c_len;
 };
 typedef struct _HTTPRequest HTTPRequest;
 

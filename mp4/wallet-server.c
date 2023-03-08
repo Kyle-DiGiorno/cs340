@@ -98,7 +98,7 @@ void* timeout_read(int fdsock){
   return NULL;
 }
 wallet_t wallet;
-void* parse_request(char* inp, int len, int sockfd){
+char* parse_request(char* inp, int len, int sockfd){
   printf("BEGUN PARSING\n");
   printf(inp);
   printf("BEGUN PARSING2\n");
@@ -136,9 +136,11 @@ void* parse_request(char* inp, int len, int sockfd){
     // pthread_create(&tid, NULL, send_data(sockfd,ret_str), NULL);
     // pthread_detach(tid);
     printf("strlen:%d\n",strlen(ret_str));
-    pthread_create(&tid, NULL, send(sockfd,ret_str,sizeof(ret_str),NULL), NULL);
-    pthread_detach(tid);
+    send(sockfd,ret_str,sizeof(ret_str),NULL);
+    // pthread_create(&tid, NULL, send(sockfd,ret_str,sizeof(ret_str),NULL), NULL);
+    
     printf("p7\n");
+    // pthread_detach(tid);
     return (ret_str);
   } else if(strncmp(inp,"MOD",3)==0){
     printf("in mod\n");
@@ -193,8 +195,9 @@ void* parse_request(char* inp, int len, int sockfd){
     // pthread_create(&tid, NULL, send_data(sockfd,ret_str), NULL);
     // pthread_detach(tid);
     printf("strlen:%d\n",strlen(ret_str));
-    pthread_create(&tid, NULL, send(sockfd,ret_str,sizeof(ret_str),NULL), NULL);
-    pthread_detach(tid);
+    send(sockfd,ret_str,sizeof(ret_str),NULL);
+    // pthread_create(&tid, NULL, send(sockfd,ret_str,sizeof(ret_str),NULL), NULL);
+    // pthread_detach(tid);
     return (ret_str);
   }
   else if(strncmp(inp,ext,4)==0){
@@ -207,7 +210,7 @@ void* parse_request(char* inp, int len, int sockfd){
 }
 void segfault_sigaction(int signal, siginfo_t *si, void *arg)
 {
-    printf("Caught segfault at address %p\n", si->si_addr);
+    printf("Caught segfault at address %p, %d,%s\n", si->si_addr,signal,arg);
 
     exit(0);
 }
@@ -230,7 +233,7 @@ void* parse_input(int vptr){
   //pthread_create(&tind, NULL, timeout_read(sockfd), NULL);
   //pthread_detach(tind);
   int full_count = 0;
-  char* to_add = malloc(4096);
+  void* to_add = malloc(4096);
   struct sigaction sa;
   memset(&sa, 0, sizeof(struct sigaction));
   sigemptyset(&sa.sa_mask);
@@ -241,12 +244,12 @@ void* parse_input(int vptr){
   //int j = 4096;
   while (1)
   {
-    strcpy(to_add,"k");
+    //strcpy(to_add,"k");
     //j+=4*sizeof(char);
     //printf("LOOP START\n");
     //printf("sock %d\n",sockfd);
     //printf(to_add);
-    printf("a");
+    //printf("a");
     if(read(sockfd, to_add, 0)){
       
       printf(": Peek value\n");
@@ -256,33 +259,75 @@ void* parse_input(int vptr){
     // for(int u = 1; recv(sockfd, to_add, u,MSG_PEEK); u++){
     //   full_count = u;
     // }
-    printf("d\n");
+    // printf("START TEST\n");
+    // char* test = malloc(400*sizeof(char));
+    // int fgla = 0;
+    // for(i = 1; fgla < 2 ;i++){
+    //   printf("IN HERE\n");
+    //   recv(sockfd, to_add, i*sizeof(char),MSG_PEEK);
+    //   printf(test);
+    //   if(fgla == 1){
+    //     fgla = 2;
+    //     printf("im so confused \n");
+    //   }
+    //   if(strcmp(test[i],"\r")){
+    //     printf("HOW\n");
+    //     break;
+    //   } else if(strcmp(test[i],"\n")){
+    //     printf("newline start\n");
+    //     fgla = 1;
+    //   }
+    // }
+    // printf("END TEST\n");
+    //printf("d\n");
     //to_add = realloc(to_add,10*sizeof(char));
     //memcpy(to_add,"k",sizeof("k"));
-    printf(to_add);
-    printf(":-:%d\n",sizeof(to_add));
+    //printf(to_add);
+    //printf(":-:%d\n",sizeof(to_add));
     //realloc(to_add, j);
-    if(!recv(sockfd, to_add, 1,NULL)){
-      strcpy(to_add,"k");
-      printf("uh\n");
-      continue;
-    } else {
-      printf("STARTED REAL\n");
-    }
+    //printf("lets%d\n",recv(sockfd, to_add, 100*sizeof(char),MSG_PEEK));
+    // printf(to_add);
+    //printf(":-:%d\n",sizeof(to_add));
+    // if(strncmp(to_add,"\n",1)){
+    //   printf("WE DEM BOIS\n");
+    //   if(!recv(sockfd, to_add, sizeof(char),NULL)){
+    //     strcpy(to_add,"k");
+    //     printf("uh\n");
+    //     continue;
+    //   } else {
+    //     printf("STARTED REAL\n");
+    //   }
+    // } else {
+    //   printf("WELCOME TO THE JUNGLE\n");
+    char* tli = malloc(400*sizeof(char));
+    int k_t = recv(sockfd, tli, 100*sizeof(char),MSG_PEEK)*sizeof(char);
+    recv(sockfd, to_add,k_t ,MSG_PEEK);
+      //strcpy(to_add,"\n");
+    //   flag = 1;
+    // }
     // i++;
     //flag = 0;
     printf("in 1\n");
-    in_str = realloc(in_str, (i + 1) * sizeof(char));
-    memcpy(in_str + i, to_add, 1);
-    printf(in_str);
+    //in_str = realloc(in_str, (i + 1) * sizeof(char));
+    //memcpy(in_str + i, to_add, 1);
+    //printf(in_str);
     printf("\ncount: %d\n",memcmp(to_add, "\n", 1));
-    if(memcmp(to_add, "\n", 1) == 0){
-      flag = 1;
-      terminated = 1;
-      printf("TTYN");
-      printf(in_str);
-      printf("SOKET NUM:%d\n",sockfd);
-      char* k = parse_request(in_str + last_request, i-last_request,sockfd);
+    if(/*memcmp(to_add, "\n", 1) == 0*/1){
+
+      // flag = 0;
+      // terminated = 1;
+      // printf("TTYN");
+      // printf(in_str);
+      // printf("SOKET NUM:%d\n",sockfd);
+      char* add_str = malloc(sizeof(to_add));
+      add_str = strtok(to_add, "\n");
+      while( add_str && sizeof(add_str) > 3*sizeof(char)) {
+      printf( " %s\n", add_str ); //printing each token
+      char* k = parse_request(add_str, strlen(add_str) - 3,sockfd);
+      add_str = strtok(NULL, " ");
+      
+      }
+      
       int p = 0;
       // while(recv(sockfd, to_add, 1,MSG_PEEK | O_NONBLOCK)){
       //   p++;
@@ -302,6 +347,9 @@ void* parse_input(int vptr){
       // printf(k);
       // printf("\ntiy2 \n");
       // strcat(k,"\n");
+      // void* trs = malloc(4*sizeof(char));
+      // recv(sockfd, trs, sizeof(char),NULL);
+      //printf(to_add);
       printf("\ntoodles \n");
     //   if(strncmp(k,"EXIT",4)==0){
     //     close(sockfd);
@@ -321,7 +369,7 @@ void* parse_input(int vptr){
     }
     //printf("\n remain: %d",read(sockfd, to_add, 1));
     printf("here\n");
-    printf(in_str + i - 1);
+    //printf(in_str + i - 1);
     i++;
     printf("POSTED UP\n");
     // if(flag){

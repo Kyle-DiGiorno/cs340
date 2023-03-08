@@ -41,8 +41,8 @@ HTTPRequest *_readpipe_vptr(const void *s, size_t len) {
   pthread_create(&tid, NULL, _thread_pipe_write, &pipe_info);
 
   httprequest_read(req, readfd);
-
-  pthread_join(tid, NULL);
+  printf("UB\n");
+  //pthread_join(tid, NULL);
   close(readfd);
 
   free(buf);
@@ -269,15 +269,23 @@ void payload_test(long size) {
   for (long long i = 0; i < size; i++) {
       reqStr[i + offset] = (rand() % 26) + 'a';
   }
-
+  printf("pre here\n");
   HTTPRequest *req = _readpipe_vptr(reqStr, offset + size);
-
+  printf("we here\n");
   const char *content_length = httprequest_get_header(req, "Content-Length");
   CAPTURE( content_length );
   REQUIRE( content_length != NULL );
+  printf("we here2\n");
   REQUIRE( atoi(content_length) == size );
-
+printf("we here3\n");
   REQUIRE( req->payload != NULL );
+  //printf("%s\n",(req->payload));
+  int i = 0;
+  while(memcmp(req->payload, reqStr + offset, i) == 0){
+    i++;
+  }
+  printf("%d and size %d\n",i,size);
+  //printf("%d\n",memcmp(req->payload, reqStr + offset, 100));
   REQUIRE( memcmp(req->payload, reqStr + offset, size) == 0 );
 
   httprequest_destroy(req);
