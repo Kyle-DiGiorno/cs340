@@ -257,7 +257,7 @@ ssize_t httprequest_read(HTTPRequest *req, int sockfd)
   }
   printf("LEFT 7 \n");
   //}
-  close(sockfd);
+  //close(sockfd);
   return i+con_len;
 }
 
