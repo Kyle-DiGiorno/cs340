@@ -18,6 +18,7 @@
  */
 ssize_t httprequest_parse_headers(HTTPRequest *req, char *buffer, ssize_t buffer_len)
 {
+  req->payload = NULL;
   if (buffer_len == 0)
   {
     req = NULL;
@@ -25,9 +26,13 @@ ssize_t httprequest_parse_headers(HTTPRequest *req, char *buffer, ssize_t buffer
   }
   int has_payload = 0;
   int count = 0;
-  req->action = malloc(sizeof(char));
-  req->path = malloc(sizeof(char));
-  req->version = malloc(sizeof(char));
+  req->action = malloc(100*sizeof(char));
+  strcpy(req->action,"\0");
+  // strcpy(req->action,"",0);
+  req->path = malloc(100*sizeof(char));
+  req->version = malloc(100*sizeof(char));
+  strcpy(req->path,"\0");
+  strcpy(req->version,"\0");
   //req->c_len = 0;
   // char* out[3]; //{'\0', '\0', '\0', '\0', '\0'};
   // for (int i = 0; i < 3; i++)
@@ -43,6 +48,7 @@ ssize_t httprequest_parse_headers(HTTPRequest *req, char *buffer, ssize_t buffer
 
   for (i = 0; i < buffer_len; i++)
   {
+    int t = 1;
     // if (count >= 6)
     //{
     //   break;
@@ -88,16 +94,31 @@ ssize_t httprequest_parse_headers(HTTPRequest *req, char *buffer, ssize_t buffer
     if (count < 3)
     {
       if(count == 0){
-        realloc(req->action, sizeof(req->action)+sizeof(char));
-        strncat( req->action, (buffer + i), 1);
+        // if(t%2 == 0){
+        //   //realloc(req->action, sizeof(req->action)+sizeof(char));
+        //   strncpy(req->action, (buffer + i), 1);
+        // } else {
+          strncat( req->action, (buffer + i),1);
+        //}
+        t*=2;
       }
       if(count == 1){
-        realloc(req->path, sizeof(req->path)+sizeof(char));
-        strncat( req->path, (buffer + i), 1);
+       // realloc(req->path, sizeof(req->path)+sizeof(char));
+      //  if(t%3 == 0){
+      //   strncpy(req->path, (buffer + i), 1);
+      //  } else{
+        strncat( req->path, (buffer + i),1);
+      // }
+       t*=3;
       }
       if(count == 2){
-        realloc(req->version, sizeof(req->version)+sizeof(char));
-        strncat( req->version, (buffer + i), 1);
+        //realloc(req->version, sizeof(req->version)+sizeof(char));
+        //  if(t%5 == 0){
+          // strncpy(req->version, (buffer + i), 1);
+          
+        // } else{
+          strncat( req->version, (buffer + i),1); 
+        // }
       }
       //strncat(out[count], (buffer + i), 1);
     }
@@ -156,6 +177,9 @@ ssize_t httprequest_read(HTTPRequest *req, int sockfd)
   // send(sockfd, 'a', sizeof('a'), 0);
   int flip = 0;
   void *in_str = malloc(sizeof(char));
+  req->payload = NULL;
+  //req->payload_malloced = 0;
+  //memcpy(req->payload_malloced,0,sizeof(int));
   // strcpy(in_str, "\0");
   char *to_add = malloc(sizeof(char));
   printf("READING 66\n");
@@ -249,6 +273,7 @@ ssize_t httprequest_read(HTTPRequest *req, int sockfd)
     printf("atoi\n");
     if(con_len > 0){ 
     printf("LEFT\n"); 
+    //req->payload_malloced = 1;
      req->payload = malloc(con_len*sizeof(char));
      printf("malloced\n");
      int pcl = 0;
@@ -324,7 +349,9 @@ const char *httprequest_get_path(HTTPRequest *req)
  */
 void httprequest_destroy(HTTPRequest *req)
 {
-  
+  if(req->payload){
+    free(req->payload);
+  }
   for (int i = 0; i < req->key_size; i++)
   {
     free(req->key[i]);
@@ -332,6 +359,10 @@ void httprequest_destroy(HTTPRequest *req)
   }
   free(req->key);
   free(req->value);
-  free(req->payload);
+  free(req->version);
+  free(req->action);
+  free(req->path);
+  
+  //free(req->payload_malloced);
   // free(req->payload_copy);
 }

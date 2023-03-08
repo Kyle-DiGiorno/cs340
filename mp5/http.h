@@ -19,8 +19,10 @@ struct _HTTPRequest {
   //    a bunch of getter functions. :)
   const char **key;
   const char **value;
+  //size_t payload_malloced;
   size_t key_size;
-  int c_len;
+  //int c_len;
+  
 };
 typedef struct _HTTPRequest HTTPRequest;
 
