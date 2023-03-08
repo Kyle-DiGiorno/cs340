@@ -25,6 +25,9 @@ ssize_t httprequest_parse_headers(HTTPRequest *req, char *buffer, ssize_t buffer
   }
   int has_payload = 0;
   int count = 0;
+  req->action = malloc(sizeof(char));
+  req->path = malloc(sizeof(char));
+  req->version = malloc(sizeof(char));
   //req->c_len = 0;
   // char* out[3]; //{'\0', '\0', '\0', '\0', '\0'};
   // for (int i = 0; i < 3; i++)
@@ -85,12 +88,15 @@ ssize_t httprequest_parse_headers(HTTPRequest *req, char *buffer, ssize_t buffer
     if (count < 3)
     {
       if(count == 0){
+        realloc(req->action, sizeof(req->action)+sizeof(char));
         strncat( req->action, (buffer + i), 1);
       }
       if(count == 1){
+        realloc(req->path, sizeof(req->path)+sizeof(char));
         strncat( req->path, (buffer + i), 1);
       }
       if(count == 2){
+        realloc(req->version, sizeof(req->version)+sizeof(char));
         strncat( req->version, (buffer + i), 1);
       }
       //strncat(out[count], (buffer + i), 1);
