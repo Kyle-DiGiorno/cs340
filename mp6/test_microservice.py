@@ -74,6 +74,8 @@ def check_course(client, coursedata):
         i += 1
 
     # check if forecast time is correct given the next meeting time
+    print(r.json["forecastTime"][:] )
+    print(r.json["nextCourseMeeting"][:])
     assert(r.json["forecastTime"][:14] == r.json["nextCourseMeeting"][:14]), f"""hour of forecast does not match hour of {course} meeting"""
     assert(r.json["forecastTime"][-5:] == "00:00"), f"""forecast time is not at the top of the hour"""
 
@@ -93,7 +95,9 @@ def check_course(client, coursedata):
             for hour in fc["properties"]["periods"]])), f"did not receive expected forecast data for {course}"
 
 def get_cached_data(client):
+    #t = client.post('/weather', data={"course": "cs340"}, content_type='multipart/form-data')
     r = client.get('/weatherCache')
+    #assert(t.status_code == 200), f"Cache is not initialized"
     assert(r.status_code == 200), f"Cache is not initialized"
     return r.json
 
