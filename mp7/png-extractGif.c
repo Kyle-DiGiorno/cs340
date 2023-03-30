@@ -1,5 +1,3 @@
-#include "png-extractGIF.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "lib/png.h"
@@ -8,50 +6,31 @@
 
 int png_extractGIF(const char *png_filename, const char *gif_filename)
 {
-  if(strcmp(&png_filename[strlen(png_filename)-4],".png")!=0){
-    printf("NOT PNG\n");
-    return 2;
-  }
-  // PNG *pre_inp = fopen(png_filename, "r");
-  // char png_sig[] = {137, 80, 78, 71, 13, 10, 26, 10};
-  // unsigned char file_sig[8];
-  // fread(file_sig, 1, 8, pre_inp);
-  // if (memcmp(file_sig, png_sig, 8) != 0) {
-  //       fclose(pre_inp);
-  //       printf("GOT HERE");
-  //       return 2;
-  // }
-  // fclose(pre_inp);
   PNG *inp = PNG_open(png_filename, "r");
   // PNG* out = PNG_open(gif_filename, "w");
   //PNG_Chunk *chunk = malloc(10000000);
   FILE *fout = fopen(gif_filename, "a");
-  //fseek(fout, 0, SEEK_SET);
-  
   fseek(fout, 0, SEEK_SET);
   fprintf(stderr, "b\n");
-  int has_uiuc = 4;
   while (1)
   {
     PNG_Chunk chunk;
     if (PNG_read(inp, &chunk) == 0) {
       PNG_close(inp);
-      return 7;
+      return ERROR_INVALID_CHUNK_DATA;
     }
-    //printf("Chunk: %s (%d bytes of data)\n", chunk.type, chunk.len);
+    printf("Chunk: %s (%d bytes of data)\n", chunk.type, chunk.len);
     if ( strcmp(chunk.type, "IEND") == 0 ) {
       PNG_free_chunk(&chunk);
-      PNG_close(inp);
-      return has_uiuc;
+      break;  
     }
     if ( strcmp(chunk.type, "UIUC") == 0 || strcmp(chunk.type, "uiuc") == 0 ) {
-      has_uiuc = 0;
-      // printf("Chunk: %s (%d bytes of data)\n", chunk.type, chunk.len);
-      // printf(chunk.type);
-      // printf("length:%d\n",chunk.len);
-      // printf("data:\n");
-      // printf("%d\n",chunk.data);
-      // printf("\nendData\n");
+      printf("Chunk: %s (%d bytes of data)\n", chunk.type, chunk.len);
+      printf(chunk.type);
+      printf("length:%d\n",chunk.len);
+      printf("data:\n");
+      printf("%d\n",chunk.data);
+      printf("\nendData\n");
       //unsigned char* out_mem= malloc(sizeof(char*)*chunk.len);
       //memcpy(out_mem,chunk.data,chunk.len); 
       int count = 0;
@@ -109,7 +88,7 @@ int png_extractGIF(const char *png_filename, const char *gif_filename)
   //       ch = fgetc(fout);
   //       printf("%c\n", ch);
   //   } 
-   // Change the to a zero to indicate success, when your implementaiton is complete.
-  return has_uiuc;
+  PNG_close(inp);
+  return 0; // Change the to a zero to indicate success, when your implementaiton is complete.
 }
 

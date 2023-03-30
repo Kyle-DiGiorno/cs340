@@ -88,10 +88,9 @@ PNG *PNG_open(const char *filename, const char *mode)
  */
 size_t PNG_read(PNG *png, PNG_Chunk *chunk)
 {
- // retval = 4;
   if (!png)
   {
-    return 2;
+    return 0;
   }
   int is_data = 0;
   // fseek(png->file_c, 4, SEEK_CUR);
