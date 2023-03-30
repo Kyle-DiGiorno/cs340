@@ -14,7 +14,8 @@ def index():
 def extract_hidden_gif():
   # ...your code here...
   if(not os.path.exists("temp")):
-     os.makedirs("temp")
+    print("made temp")
+    os.makedirs("temp")
   # for filepath in request.files['png']:
   #   print(str(filepath))
   #   if(not os.path.exists(str(filepath))):
@@ -38,10 +39,12 @@ def extract_hidden_gif():
   for n in range (0,100000):
     #print(n)
     if(not os.path.exists("temp/"+ str(n) +".gif")):
+      print("inside")
       print("./png-extractGIF " + "TempFileData.png " + "temp/"+str(n)+".gif")
       k = os.system(("./png-extractGIF " + "TempFileData.png " + "temp/"+str(n)+".gif"))
       if(k != 0):
-        os.remove("temp/"+ str(n) +".gif")
+        if(os.path.exists("temp/"+ str(n) +".gif")):
+          os.remove("temp/"+ str(n) +".gif")
         if(k == 4*256):
           return "failed extraction, no hidden gif",415
         if(k == 2):
