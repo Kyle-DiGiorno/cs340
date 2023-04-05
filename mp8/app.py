@@ -162,9 +162,11 @@ def get_image(addr):
     print("not in s3")
     img_data = requests.get(
         f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}').content
+    print("found image sucessfully")
+    print(img_data[:40])
     data_out = s3.Bucket("bucket").upload_fileobj(
         io.BytesIO(img_data), f'{"data:image/png;base64,"}{addr}')
-    
+    print("final_line")
     return get_image(addr)
 @app.route('/')
 def index():
