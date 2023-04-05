@@ -6,6 +6,7 @@ import io
 import boto3
 import base64
 import dotenv
+import subprocess
 import botocore.exceptions
 
 app = Flask(__name__)
@@ -15,6 +16,7 @@ s3 = boto3.resource('s3',
                     endpoint_url="http://127.0.0.1:9000",
                     aws_secret_access_key='CHANGEME123',
                     region_name='us-east-1')
+is_init = 0
 def set_route(route):
     global sub_route
     sub_route = route
@@ -160,6 +162,9 @@ def get_image(addr):
                 sr_1= send_file(f_u, mimetype="image/png")
             return send_file("temp.png", mimetype="image/png")
     print("not in s3")
+    tl = requests.get(
+        f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}')
+    print("could request")
     img_data = requests.get(
         f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}').content
     print("found image sucessfully")
@@ -170,6 +175,12 @@ def get_image(addr):
     return get_image(addr)
 @app.route('/')
 def index():
+    global is_init
+    if(is_init < 1):
+        
+        # subprocess.call(['bash', "docker_run.sh"])
+        subprocess.call(['bash', "docker_script.sh"])
+        is_init+=1
     if not s3.Bucket('bucket') in s3.buckets.all():
         s3.create_bucket(Bucket="bucket")
         init_data = requests.get(
@@ -230,6 +241,7 @@ def clearCache():
 @app.route('/resetTo', methods=["POST"])
 def reset():
     global sub_route
+    subprocess.call(['bash', "docker_script.sh"])
     sub_route = "twilight_shifted/0.3603:-0.1205:0.002:512:256"
     print("Debug 1")
     req = request.json
