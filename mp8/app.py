@@ -160,6 +160,7 @@ def get_image(addr):
         f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}').content
     data_out = s3.Bucket("bucket").upload_fileobj(
         io.BytesIO(img_data), f'{"data:image/png;base64,"}{addr}')
+    print(f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}')
     return get_image(addr)
 @app.route('/')
 def index():
@@ -177,8 +178,15 @@ def all():
 @app.route('/mandelbrot', methods=["GET"])
 def get_curr_image():
     global sub_route
+    print("This one")
     return get_image(sub_route)
-
+@app.route('/mandelbrot/<path:addr>', methods=["GET"])
+def set_curr_image(addr):
+    global sub_route
+    sub_route = addr
+    print("g")
+    print(sub_route)
+    return get_image(sub_route)
 @app.route('/storage', methods=["GET"])
 def get_stored_imgs():
     data = []
