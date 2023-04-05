@@ -91,7 +91,7 @@ def smallerimage():
     global sub_route
     sr_array= sub_route.split("/")
     sr_1= sr_array[1].split(":")
-    sr_1[3] = str(int(sr_1[3])/1.25)
+    sr_1[3] = str(float(sr_1[3])/1.25)
     sr_array[1] = ":".join(sr_1)
     sub_route = "/".join(sr_array)
     return get_image("/".join(sr_array))
@@ -102,7 +102,7 @@ def largerimage():
     global sub_route
     sr_array= sub_route.split("/")
     sr_1= sr_array[1].split(":")
-    sr_1[3] = str(int(1.25*int(sr_1[3])))
+    sr_1[3] = str(float(1.25*float(sr_1[3])))
     sr_array[1] = (":".join(sr_1))
     sub_route = "/".join(sr_array)
     print(sub_route)
@@ -114,7 +114,7 @@ def moreiterations():
     global sub_route
     sr_array= sub_route.split("/")
     sr_1= sr_array[1].split(":")
-    sr_1[4] = str(2*int(sr_1[4]))
+    sr_1[4] = str(2*float(sr_1[4]))
     sr_array[1] = (":".join(sr_1))
     sub_route ="/".join(sr_array)
     print(sub_route)
@@ -126,7 +126,7 @@ def lessiterations():
     global sub_route
     sr_array= sub_route.split("/")
     sr_1= sr_array[1].split(":")
-    sr_1[4] = str(int(int(sr_1[4])/2))
+    sr_1[4] = str(float(float(sr_1[4])/2))
     sr_array[1] = (":".join(sr_1))
     sub_route = "/".join(sr_array)
     return get_image(sub_route)
