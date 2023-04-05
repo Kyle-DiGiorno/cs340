@@ -144,10 +144,13 @@ def color_map():
 
 def get_image(addr):
     global s3
+    print(f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}')
     if not s3.Bucket('bucket') in s3.buckets.all():
+        print("bucket make")
         s3.create_bucket(Bucket="bucket")
     files_in_s3 = s3.Bucket('bucket').objects.all()
     for file_addr in files_in_s3:
+        print("in s3")
         if f'{"data:image/png;base64,"}{addr}' == file_addr.key:
             curr_addr = addr
             with open('temp.png', 'wb') as f_d:
@@ -156,11 +159,12 @@ def get_image(addr):
             with open("temp.png", "rb") as f_u:
                 sr_1= send_file(f_u, mimetype="image/png")
             return send_file("temp.png", mimetype="image/png")
+    print("not in s3")
     img_data = requests.get(
         f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}').content
     data_out = s3.Bucket("bucket").upload_fileobj(
         io.BytesIO(img_data), f'{"data:image/png;base64,"}{addr}')
-    print(f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}')
+    
     return get_image(addr)
 @app.route('/')
 def index():
@@ -238,7 +242,9 @@ def reset():
     sr_1[4] = str(req["iter"])
     sr_array[1] = (":".join(sr_1))
     sub_route = "/".join(sr_array)
-    return get_image("/".join(sr_array))
+    print("Debug 3")
+    print(sub_route)
+    return get_image(sub_route)
 
 @app.route('/getState', methods=["GET"])
 def get_state():
