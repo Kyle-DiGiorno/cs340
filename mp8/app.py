@@ -225,7 +225,9 @@ def clearCache():
 def reset():
     global sub_route
     sub_route = "twilight_shifted/0.3603:-0.1205:0.002:512:256"
+    print("Debug 1")
     req = request.json
+    print("Debug 2")
     sr_array= sub_route.split("/")
     sr_1= sr_array[1].split(":")
     sr_array[0] = req["colormap"]
