@@ -162,6 +162,22 @@ def get_image(addr):
                 sr_1= send_file(f_u, mimetype="image/png")
             return send_file("temp.png", mimetype="image/png")
     print("not in s3")
+    #print("ping result google")
+    hostname = "google.com"
+    response = os.system("ping -c 1 " + hostname)
+    #and then check the response...
+    if response == 0:
+    print hostname, 'is up!'
+    else:
+    print hostname, 'is down!'
+    hostname = f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}'
+    response = os.system("ping -c 1 " + hostname)
+
+    #and then check the response...
+    if response == 0:
+    print hostname, 'is up!'
+    else:
+    print hostname, 'is down!'
     tl = requests.get(
         f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}')
     print("could request")
