@@ -164,13 +164,13 @@ def get_image(addr):
     print("not in s3")
     #print("ping result google")
     hostname = "google.com"
-    response = os.system("ping -c 1 " + hostname)
-    #and then check the response...
-    if response == 0:
-        print("google up")
-    else:
-        print("google down")
-    # hostname = f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}'
+    # response = os.system("ping -c 1 " + hostname)
+    # #and then check the response...
+    # if response == 0:
+    #     print("google up")
+    # else:
+    #     print("google down")
+    # # hostname = f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}'
     # response = os.system("ping -c 1 " + hostname)
 
     # #and then check the response...
