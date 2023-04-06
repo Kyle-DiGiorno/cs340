@@ -176,11 +176,10 @@ def get_image(addr):
 @app.route('/')
 def index():
     global is_init
-    if(is_init < 1):
-        
-        # subprocess.call(['bash', "docker_run.sh"])
-        subprocess.call(['bash', "docker_script.sh"])
-        is_init+=1
+    # if(is_init < 1):
+    #     # subprocess.call(['bash', "docker_run.sh"])
+    #     subprocess.call(['bash', "docker_script.sh"])
+    #     is_init+=1
     if not s3.Bucket('bucket') in s3.buckets.all():
         s3.create_bucket(Bucket="bucket")
         init_data = requests.get(
@@ -240,8 +239,11 @@ def clearCache():
 
 @app.route('/resetTo', methods=["POST"])
 def reset():
+    global is_init
     global sub_route
-    subprocess.call(['bash', "docker_script.sh"])
+    if( is_init < 1):
+        subprocess.call(['bash', "docker_script.sh"])
+        is_init+=1
     sub_route = "twilight_shifted/0.3603:-0.1205:0.002:512:256"
     print("Debug 1")
     req = request.json
