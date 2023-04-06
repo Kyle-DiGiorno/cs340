@@ -167,17 +167,17 @@ def get_image(addr):
     response = os.system("ping -c 1 " + hostname)
     #and then check the response...
     if response == 0:
-        print hostname, 'is up!'
+        print("google up")
     else:
-        print hostname, 'is down!'
+        print("google down")
     hostname = f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}'
     response = os.system("ping -c 1 " + hostname)
 
     #and then check the response...
     if response == 0:
-        print hostname, 'is up!'
+        print("local up")
     else:
-        print hostname, 'is down!'
+        print("local down")
     tl = requests.get(
         f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}')
     print("could request")
