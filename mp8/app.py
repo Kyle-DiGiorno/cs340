@@ -179,9 +179,9 @@ def get_image(addr):
     #     print("local up")
     # else:
     #     print("local down")
-    tl_pre = requests.get(
-        f'{"http://127.0.0.1:34000/mandelbrot"}')
-    print("reqquest exists")
+    # tl_pre = requests.get(
+    #     f'{"http://127.0.0.1:34000/mandelbrot"}')
+    # print("reqquest exists")
     tl = requests.get(
         f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}')
     print("could request")
