@@ -1,6 +1,7 @@
 import json
 from flask import Flask, jsonify, send_file, render_template, request
 import requests
+import time
 import os
 import io
 import boto3
@@ -190,6 +191,7 @@ def get_image(addr):
     except Exception as e:
         print("monoker")
         subprocess.call(['bash', "docker_script.sh"])
+        time.sleep(4)
     print("could request")
     img_data = requests.get(
         f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}').content
