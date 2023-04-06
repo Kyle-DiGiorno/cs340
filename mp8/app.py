@@ -145,6 +145,7 @@ def color_map():
     return get_image(sub_route)
 
 def get_image(addr):
+    subprocess.call(['bash', "docker_script.sh"])
     global s3
     print(f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}')
     if not s3.Bucket('bucket') in s3.buckets.all():
