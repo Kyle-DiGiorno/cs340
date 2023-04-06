@@ -16,7 +16,10 @@ def MandelbrotSetImage(palette, center_real, center_imag, height, dim, iteration
     smooth=True
   )
   return image
-
+@app.route("/debug")
+def debugger():
+  print("got here")
+  return "200 OK"
 @app.route('/mandelbrot/<colormap>/<float(signed=True):real>:<float(signed=True):imag>:<float:height>:<int:dim>:<int:iter>', methods=['GET'])
 def waf(colormap, real, imag, height, dim, iter):
   try:
