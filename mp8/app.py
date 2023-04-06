@@ -183,7 +183,7 @@ def get_image(addr):
     #     f'{"http://127.0.0.1:34000/mandelbrot"}')
     # print("reqquest exists")
     tl = requests.get(
-        f'{"http://127.0.0.1:34000/debug"}/{addr}')
+        f'{"http://127.0.0.1:34000/debug"}')
     print("could request")
     img_data = requests.get(
         f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}').content
