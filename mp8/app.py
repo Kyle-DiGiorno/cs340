@@ -182,8 +182,14 @@ def get_image(addr):
     # tl_pre = requests.get(
     #     f'{"http://127.0.0.1:34000/mandelbrot"}')
     # print("reqquest exists")
-    tl = requests.get(
-        f'{"http://127.0.0.1:34000/debug"}')
+    yu = 0
+    while(yu == 0):
+        try:
+            tl = requests.get(
+            f'{"http://127.0.0.1:34000/debug"}')
+            yu = 1
+        except Exception as e:
+            subprocess.call(['bash', "docker_script.sh"])
     print("could request")
     img_data = requests.get(
         f'{"http://127.0.0.1:34000/mandelbrot"}/{addr}').content
