@@ -44,14 +44,13 @@ vals_pre_dict = {(row,col):vals_pre.copy()}
 
 url_to_put = "http://sp23-cs340-adm.cs.illinois.edu:34000/addMG"
 #url_to_put = "http://127.0.0.1:5000/addMG"
-#url_to_get = "http://sp23-cs340-200.cs.illinois.edu:3000/"
-url_to_get = "http://127.0.0.1:3000"
-out_file = open("outm.json", "w")
+url_to_get = "http://sp23-cs340-200.cs.illinois.edu:3000/"
+#url_to_get = "http://127.0.0.1:3000"
 
 requests.put(url=url_to_put, json={"name": "Diffusion monad sheaf",
-                                                                            "url": url_to_get,
-                                                                            "author": "Kyle DiGaetano",
-                                                                            "weight": 1})
+                                        "url": url_to_get,
+                                        "author": "Kyle DiGaetano",
+                                        "weight": 1})
 
 
 
