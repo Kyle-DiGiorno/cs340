@@ -32,7 +32,7 @@ vals_pre = ['0000'+'0000'+'0000'+'0110'+'0100'+'0000'+'0000',
             '0000'+'0000'+'0000'+'0110'+'0010'+'0000'+'0000',
             '0000'+'0000'+'0100'+'0000'+'0000'+'0001'+'0000',
             '0000'+'0000'+'0000'+'0000'+'0000'+'0000'+'0000',]
-vals_pre_dict = {(row,col):vals_pre.copy()}
+#vals_pre_dict = {(row,col):vals_pre.copy()}
 # vals_pre = ["1000"+"1000"+"1000"+"1000"+"1000"+"1000"+"0000", 
 #             "1000"+"1000"+"1000"+"1000"+"1000"+"1000"+"0000", 
 #             "1000"+"1000"+"1000"+"1000"+"1000"+"1000"+"0000", 
@@ -47,7 +47,7 @@ url_to_put = "http://sp23-cs340-adm.cs.illinois.edu:34000/addMG"
 url_to_get = "http://sp23-cs340-200.cs.illinois.edu:3000/"
 #url_to_get = "http://127.0.0.1:3000"
 
-requests.put(url=url_to_put, json={"name": "Diffusion monad sheaf",
+requests.put(url=url_to_put, json={"name": "Diffusion monad sheaf (lame version)",
                                         "url": url_to_get,
                                         "author": "Kyle DiGaetano",
                                         "weight": 1})
@@ -165,7 +165,7 @@ def run_diffusion(x):
 start = 1
 @ app.route('/generate', methods=["GET"])
 def generate_dyamic():
-    global vals_pre_dict
+    #global vals_pre_dict
     global vals_pre
     global walls
     global start
@@ -173,18 +173,15 @@ def generate_dyamic():
     global col
     global old_col
     global old_row
-    if(abs(row+col) > 0):
+    if(start == 0):
         # print("&=============&")
         # print((old_row,old_col))
-        # print(vals_pre_dict[(old_row,old_col)])
-        vals_pre_f = run_diffusion(torch.stack([torch.tensor([int(k,2) for k in n],dtype = torch.float32) for n in vals_pre_dict[(0,0)]])).squeeze().detach().cpu().numpy()
-        # print(vals_pre_dict[(old_row,old_col)])
+        vals_pre_f = run_diffusion(torch.stack([torch.tensor([int(k,2) for k in n],dtype = torch.float32) for n in vals_pre])).squeeze().detach().cpu().numpy()
         mx=np.max(np.abs(vals_pre_f))
         vals_pre_f/=mx
         
         #print(vals_pre_f)
         #vals_pre_f%=1
-        # print(vals_pre_dict[(old_row,old_col)])
         for k in range(len(vals_pre_f)):
             #print(vals_pre_f[k])
             vals_pre_f[k] = np.round(vals_pre_f[k])
@@ -192,17 +189,11 @@ def generate_dyamic():
             for l in vals_pre_f[k]:
                 t += str(int(abs(l)))
             vals_pre[k] = t
-        
-        # print(vals_pre_dict.keys())
+    start = 0
         # print("********")
         # print((row,col))
 
-        #print(vals_pre_dict[(row,col)])
         # print("vpd________")
-        # print(vals_pre_dict)
-        vals_pre_dict[(row,col)]=vals_pre.copy()
-        # print(vals_pre_dict[(old_row,old_col)])
-        # print(vals_pre_dict)
     #val_hex = [str(hex(int(vals[0], 2)))[2:], str(hex(int(vals[1], 2)))[2:], str(hex(int(vals[2], 2)))[2:], str(hex(
         #int(vals[3], 2)))[2:], str(hex(int(vals[4], 2)))[2:], str(hex(int(vals[5], 2)))[2:], str(hex(int(vals[6], 2)))[2:]]
     val_hex = ["0"*(7-len(hex(int(vals_pre[n],2)|int(walls[n],2))[2:]))+ hex(int(vals_pre[n],2)|int(walls[n],2))[2:]  for n in range(len(vals_pre))]#["988088c", "1000004", "1000004", "0", "1000004", "1000004", "3220226"]
@@ -212,17 +203,17 @@ def generate_dyamic():
                 #[hex(int(n,2))[2:] for n in vals]
     #print(vals_pre)
     return jsonify({"geom": val_hex}), 200
-@ app.route('/putRowCol', methods=["PUT"])
-def put_row_col():
-    global row
-    global col
-    global old_col
-    global old_row
-    data = request.get_json()
-    old_col = col
-    old_row = row
-    row = data['row']
-    col = data['col']
-    print(row)
-    print(col)
-    return jsonify({"msg": "hi"}), 200
+# @ app.route('/putRowCol', methods=["PUT"])
+# def put_row_col():
+#     global row
+#     global col
+#     global old_col
+#     global old_row
+#     data = request.get_json()
+#     old_col = col
+#     old_row = row
+#     row = data['row']
+#     col = data['col']
+#     print(row)
+#     print(col)
+#     return jsonify({"msg": "hi"}), 200

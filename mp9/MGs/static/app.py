@@ -37,7 +37,7 @@ url_to_put = "http://sp23-cs340-adm.cs.illinois.edu:34000/addMG"
 url_to_get = "http://sp23-cs340-200.cs.illinois.edu:4000/"
 #url_to_get = "http://127.0.0.1:4000"
 
-requests.put(url=url_to_put, json={"name": "Diffusion monad sheaf",
+requests.put(url=url_to_put, json={"name": "Just A Guy",
                                         "url": url_to_get,
                                         "author": "Kyle DiGaetano",
                                         "weight": 1})

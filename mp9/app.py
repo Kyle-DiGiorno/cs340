@@ -88,7 +88,7 @@ def gen_rand_maze_segment(user):
         row = int(request.args['row'])
     if 'col' in request.args.keys():
         col = int(request.args['col'])
-    requests.put(url="http://127.0.0.1:3000/putRowCol",json={"row":row,"col":col})
+    #requests.put(url="http://127.0.0.1:3000/putRowCol",json={"row":row,"col":col})
     old_segment = maze_state.get_state(row, col)
     if old_segment != None:  # segment already exists in maze state
         tmp = old_segment[0]
