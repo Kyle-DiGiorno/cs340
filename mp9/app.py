@@ -374,7 +374,7 @@ def heartbeat():
         print(data)
     if 'y' in data:
         col = int(round(data['x']/7-0.01))
-    requests.put(url="http://127.0.0.1:3000/putRowCol",json={"row":row,"col":col})
+    #requests.put(url="http://127.0.0.1:3000/putRowCol",json={"row":row,"col":col})
     # get current time
     now = int(time.time())
     # add a timestamp to the heartbeat data
