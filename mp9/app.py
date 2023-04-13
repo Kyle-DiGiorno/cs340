@@ -88,7 +88,7 @@ def gen_rand_maze_segment(user):
         row = int(request.args['row'])
     if 'col' in request.args.keys():
         col = int(request.args['col'])
-
+    requests.put(url="http://127.0.0.1:3000/putRowCol",json={"row":row,"col":col})
     old_segment = maze_state.get_state(row, col)
     if old_segment != None:  # segment already exists in maze state
         tmp = old_segment[0]
@@ -363,8 +363,18 @@ def heartbeat():
     '''Route for exchanging player location information'''
     # get POST data
     data = request.json
+    
     # remove user id from data
     u = data["user"]
+    row = 0
+    col = 0
+    if 'x' in data:
+        row = int(round(data['y']/7-0.01))
+    else:
+        print(data)
+    if 'y' in data:
+        col = int(round(data['x']/7-0.01))
+    requests.put(url="http://127.0.0.1:3000/putRowCol",json={"row":row,"col":col})
     # get current time
     now = int(time.time())
     # add a timestamp to the heartbeat data
