@@ -42,7 +42,7 @@ vals_pre_dict = {(row,col):vals_pre.copy()}
 #             "1110111111011111011111011111"]
 
 
-url_to_put = "http://sp23-cs340-adm.cs.illinois.edu:34999/addMG"
+url_to_put = "http://sp23-cs340-adm.cs.illinois.edu:34000/addMG"
 #url_to_put = "http://127.0.0.1:5000/addMG"
 url_to_get = "http://sp23-cs340-200.cs.illinois.edu:3000/"
 #url_to_get = "http://127.0.0.1:3000"
