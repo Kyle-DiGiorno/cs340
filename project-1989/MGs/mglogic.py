@@ -3,6 +3,7 @@ from PIL import Image
 import numpy as np
 from sklearn.neighbors import KDTree
 
+
 # def scale(image, tileSize):
 #     print(image)
 #     image.resize((tileSize, tileSize), resample=Image.BILINEAR)
@@ -37,7 +38,7 @@ def set_up_round(y):
     # def round_to_closest(x):
     #     f_val = f(x)
     #     return g(f_val)
-    sorted_y = np.array(sorted(y, key=lambda x: tuple(x)))
+    sorted_y = np.array(sorted(y, key=lambda x: tuple(x)))#.reshape(-1, 1)
     tree = KDTree(sorted_y)
 
     def round_to_closest(x):
@@ -46,6 +47,7 @@ def set_up_round(y):
     return round_to_closest
 
 def process_image(input_image_path, to_upload, tileSize, tilesAcross, tiles, pre_string, save, roundfn = None):
+    
     with Image.open(input_image_path) as input_image:
         input_image = input_image.convert('RGB')
         if to_upload:
@@ -68,6 +70,6 @@ def process_image(input_image_path, to_upload, tileSize, tilesAcross, tiles, pre
                     #print(tile_index)
                     #print(tiles[tuple(tile_index)])
                     output_image.paste(tiles[tuple(tile_index)],(x*tileSize,y*tileSize))
-            print(output_image)
+            #print(output_image)
             #output_image.save("Oiii.png")
-            return output_image
+    return output_image
