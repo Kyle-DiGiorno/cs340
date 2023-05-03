@@ -37,10 +37,12 @@ def GET_index():
                     #     module.setup(url)
                     #     modules.append(module)
   return render_template("index.html")
-@app.route('/add_server', methods = ["POST"])
+@app.route('/addMMG', methods = ["PUT"])
 def add_server():
-    #print("Adding server")
-    addr = request.json['url']
+    print("Adding server")
+    name = request.form["name"]
+    addr = request.form["url"]
+    author = request.form["author"]
     print(addr)
     with open('server_list.json', 'r') as json_file:
       try: 
@@ -73,11 +75,12 @@ def POST_makeMosaic():
       # t = requests.get("http://127.0.0.1:5001/rim")
       # with open(f'a-{i}.png', "rb") as t:
       #   print("f")
-      out = requests.post(s, files = {'f':f}, data = {"tileSize":tileSize,"tilesAcross":tilesAcross})
+      out = requests.post(f'{s}?tilesAcross={tilesAcross}&renderedTileSize={tileSize}',
+                files={"image": open(base_img_name, "rb")})
       #print(out.json())
       i+=1
       print(i)
-      response.append(out.json())
+      response+=out.json()
       #f = request.files["image"]
 
   return jsonify(response)

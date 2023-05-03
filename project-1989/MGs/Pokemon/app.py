@@ -18,7 +18,7 @@ tiles = {}
 tileSize = 30
 tilesAcross = 40
 port_num = os.environ.get('port_num')
-
+dir_path = ''
 # def cleanup():
 #   with open('server_list.json', 'w') as file:
 #     file.truncate(0)
@@ -30,22 +30,37 @@ fn = None
 @app.route('/makeMosaic', methods=["POST"])
 def make_mosaic():
     print("here")
-    
-    tileSize = int(request.form.get('tileSize'))
-    tilesAcross = int(request.form.get('tilesAcross'))
-    f = request.files['f']
+    global tileSize
+    global tilesAcross
+    global tiles
+    global dir_path
+    global fn
+    tileSize_t = int(request.args.get('renderedTileSize'))
+    tilesAcross_t = int(request.args.get('tilesAcross'))
+    if(not(tileSize_t == tileSize and tilesAcross_t == tilesAcross)):
+        print("DIFFER")
+        tileSize = tileSize_t
+        tilesAcross = tilesAcross_t
+        image_files = glob.glob(os.path.join(f'{dir_path}/images', '*.png'))
+        for k in image_files:
+            print("YEAH")
+            tiles = mglogic.process_image(k, True, tileSize, tilesAcross, tiles, f'{dir_path}/images/{k.split("/")[-1]}',save)
+        fn = mglogic.set_up_round(tiles.keys())
+    print(tileSize)
+    f = request.files['image']
     # f.save(f'a-i.png')
     # with open(f'a-i.png', "rb") as f_i:
     out = mglogic.process_image(f, False, tileSize, tilesAcross, tiles, "",False, roundfn = fn)
         # print("out:")
     # print(out)
+    print("HERE")
     out.save(f'a-i.png')
     with open(f'a-i.png', "rb") as q:
         buffer = q.read()
         b64 = base64.b64encode(buffer)
-        response={
+        response=[{
             "image": "data:image/png;base64," + b64.decode('utf-8')
-        }
+        }]
     return jsonify(response)
 def add_server(server_adress):
     global port_num
@@ -54,13 +69,19 @@ def add_server(server_adress):
     #os.system(f'flask run --port={port_num} &')
     with app.test_request_context():
         url = url_for('make_mosaic', _external=True)
+
         # print(f'{url[:-1]}:{port_num}')
         # print(f'{server_adress}/add_server')
-        requests.post(f'{server_adress}/add_server',json = {"url":f'{url[:-1*len("/makeMosaic")]}:{port_num}/makeMosaic'})
+        current_directory = os.getcwd()
+        name = os.path.basename(current_directory)
+        print(name)
+        requests.put(f'{server_adress}/addMMG',data = {"name":name
+        , "url":f'{url[:-1*len("/makeMosaic")]}:{port_num}/makeMosaic', "author":"kylend2"})
 def setup(server_adress = None):
     global fn
     global tiles
     global port_num
+    global image_files
     # if os.path.exists(directory):
     #     print('Directory exists')
     # else:
@@ -69,7 +90,9 @@ def setup(server_adress = None):
     #     if os.path.isfile(os.path.join(directory, filename)):
     #         print(filename)
     print("setting up")
-
+    port_num = os.environ.get('port_num')
+    print("PRINTING")
+    print(port_num)
     save = False
     filepath = os.path.abspath(__file__)
     dir_path, file_name = os.path.split(filepath)
@@ -78,6 +101,7 @@ def setup(server_adress = None):
         image_files = glob.glob(os.path.join(directory, '*png'))
         save = True
     for k in image_files:
+        
         tiles = mglogic.process_image(k, True, tileSize, tilesAcross, tiles, f'{dir_path}/images/{k.split("/")[-1]}',save)
     fn = mglogic.set_up_round(tiles.keys())
     if server_adress:

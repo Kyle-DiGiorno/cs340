@@ -61,15 +61,15 @@ def process_image(input_image_path, to_upload, tileSize, tilesAcross, tiles, pre
         else:
             tilesDown = round(tilesAcross * (input_image.height/input_image.width))
             output_image = Image.new(mode=input_image.mode, size=(tilesAcross * tileSize, tilesDown*tileSize))
-            
+            input_tileSize = input_image.height/tilesAcross
             for x in range(tilesAcross):
                 for y in range(tilesDown):
-                    subimage = input_image.crop((x * tileSize, y * tileSize, (x + 1) * tileSize, (y + 1) * tileSize))
+                    subimage = input_image.crop((x * input_tileSize, y * input_tileSize, (x + 1) * input_tileSize, (y + 1) * input_tileSize))
                     average_color = get_average_color(subimage)
                     tile_index = roundfn(average_color)
                     #print(tile_index)
                     #print(tiles[tuple(tile_index)])
-                    output_image.paste(tiles[tuple(tile_index)],(x*tileSize,y*tileSize))
+                    output_image.paste(tiles[tuple(tile_index)].resize((tileSize,tileSize)),(x*tileSize,y*tileSize))
             #print(output_image)
             #output_image.save("Oiii.png")
     return output_image
