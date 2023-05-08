@@ -54,5 +54,5 @@ with app.test_request_context():
 print(address)
 print(f'{address[:-len("/reduceMosaic")]}:{port_num}/reduceMosaic')
 requests.put(f'{server_adress}/registerReducer',data = {"name":"reducer"
-        ,"url":f'http://172.22.150.20:{port_num}/reduceMosaic', "author":"kylend2"})
+        ,"url":f'http://172.22.150.202:{port_num}/reduceMosaic', "author":"kylend2"})
 print(address)
