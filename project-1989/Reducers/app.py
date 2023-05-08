@@ -4,7 +4,7 @@ from PIL import Image
 import numpy as np
 import os
 app = Flask(__name__)
-server_adress = "http://127.0.0.1:5000"
+server_adress = "http://sp23-cs340-adm.cs.illinois.edu:1989"
 port_num = os.environ.get('port_num')
 @app.route("/reduceMosaic", methods=["POST"])
 def reduce():
