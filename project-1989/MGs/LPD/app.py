@@ -12,7 +12,7 @@ import MGs.mglogic as mglogic
 from flask import Flask, url_for,  Response, request,jsonify, make_response
 import requests
 import atexit
-server_adress = "http://127.0.0.1:5000"
+server_adress = "http://sp23-cs340-adm.cs.illinois.edu:1989"
 port_num = os.environ.get('port_num')
 
 
