@@ -83,7 +83,7 @@ def add_server(server_adress):
         name = os.path.basename(current_directory)
         print(name)
         requests.put(f'{server_adress}/addMMG',data = {"name":name
-        , "url":f' 	http://172.22.150.202:5020:{port_num}/makeMosaic', "author":"kylend2", "tileImageCount":image_count})
+        , "url":f'http://172.22.150.202:5020:{port_num}/makeMosaic', "author":"kylend2", "tileImageCount":image_count})
 def setup(server_adress = None):
     global fn
     global tiles
